@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mon appli</title>
+
+  <!-- Apparence iPhone -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Mon Appli">
+
+  <style>
+    body {
+      font-family: -apple-system, system-ui, sans-serif;
+      background-color: #111827;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 70vh;
+      font-size: 16px;
+      border-radius: 10px;
+      border: none;
+      padding: 15px;
+      background-color: #020617;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Mon appli</h2>
+  <p>Le texte est sauvegardé automatiquement.</p>
+
+  <textarea id="texte" placeholder="Écris ici..."></textarea>
+
+  <script>
+    const champ = document.getElementById("texte");
+
+    // Charger la donnée sauvegardée
+    champ.value = localStorage.getItem("monTexte") || "";
+
+    // Sauvegarder à chaque modification
+    champ.addEventListener("input", () => {
+      localStorage.setItem("monTexte", champ.value);
+    });
+  </script>
+</body>
+</html>
