@@ -2,51 +2,873 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Mon appli</title>
+  <title>Amis</title>
 
   <!-- Apparence iPhone -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Mon Appli">
+  <meta name="apple-mobile-web-app-title" content="Amis">
 
   <style>
-    body {
-      font-family: -apple-system, system-ui, sans-serif;
-      background-color: #111827;
-      color: white;
-      margin: 0;
-      padding: 20px;
+    :root {
+      color-scheme: dark;
     }
 
-    textarea {
-      width: 100%;
-      height: 70vh;
-      font-size: 16px;
-      border-radius: 10px;
-      border: none;
-      padding: 15px;
+    body {
+      margin: 0;
+      font-family: -apple-system, system-ui, sans-serif;
       background-color: #020617;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #1f2937;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    header .stats-mini {
+      font-size: 12px;
+      color: #9ca3af;
+      text-align: right;
+      line-height: 1.2;
+    }
+
+    main {
+      padding: 12px 16px 24px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 14px;
+      background-color: #2563eb;
       color: white;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background-color: #111827;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+    }
+
+    .btn-danger {
+      background-color: #b91c1c;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      background-color: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+
+    .search-input::placeholder {
+      color: #6b7280;
+    }
+
+    .friends-list {
+      max-height: calc(100vh - 190px);
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .friend-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 10px;
+      margin-bottom: 6px;
+      border-radius: 10px;
+      background: #020617;
+      border: 1px solid #111827;
+      cursor: pointer;
+    }
+
+    .friend-item.dimmed {
+      opacity: 0.4;
+    }
+
+    .friend-name {
+      font-size: 15px;
+    }
+
+    .friend-score {
+      font-size: 14px;
+      color: #9ca3af;
+      text-align: right;
+    }
+
+    .dots {
+      font-size: 12px;
+      color: #facc15;
+      margin-top: 4px;
+    }
+
+    .label {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-bottom: 4px;
+    }
+
+    .field {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background-color: #020617;
+      color: #e5e7eb;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .field::placeholder {
+      color: #6b7280;
+    }
+
+    .error {
+      font-size: 12px;
+      color: #f97316;
+      margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 12px 0 4px;
+    }
+
+    .inline {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .day-cell {
+      height: 22px;
+      border-radius: 4px;
+      background-color: #020617;
+      border: 1px solid #1f2937;
+      font-size: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .day-cell.active {
+      background-color: #22c55e;
+      border-color: #22c55e;
+      color: #020617;
+    }
+
+    .day-cell.today {
+      border-color: #facc15;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin: 2px 0;
+    }
+
+    .chips {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .chip {
+      font-size: 11px;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background-color: #020617;
+      border: 1px solid #374151;
     }
   </style>
 </head>
-
 <body>
-  <h2>Mon appli</h2>
-  <p>Le texte est sauvegardé automatiquement.</p>
+  <!-- ACCUEIL -->
+  <header id="header-accueil">
+    <h1>Amis</h1>
+    <div class="stats-mini">
+      <div>MAX: <span id="mini-max">0</span></div>
+      <div>AUJ: <span id="mini-auj">0</span></div>
+      <div>MOY: <span id="mini-moy">0</span></div>
+    </div>
+  </header>
 
-  <textarea id="texte" placeholder="Écris ici..."></textarea>
+  <main id="view-accueil">
+    <div class="top-actions">
+      <button class="btn-secondary" id="btn-total">Total</button>
+      <button class="btn" id="btn-ajouter-ami">Action (2)</button>
+    </div>
+
+    <input
+      id="search"
+      type="text"
+      class="search-input"
+      placeholder="rechercher quelqu'un"
+    >
+
+    <div class="friends-list" id="friends-list">
+      <!-- liste d'amis remplie en JS -->
+    </div>
+  </main>
+
+  <!-- AJOUTER UN AMI -->
+  <header class="hidden" id="header-ajout">
+    <button class="btn-secondary" id="btn-retour-ajout">&lt; accueil</button>
+    <h1>Ajouter un ami</h1>
+    <div class="stats-mini">
+      <div>MAX: <span id="ajout-max">0</span></div>
+      <div>AUJ: <span id="ajout-auj">0</span></div>
+      <div>MOY: <span id="ajout-moy">0</span></div>
+    </div>
+  </header>
+
+  <main class="hidden" id="view-ajout">
+    <div class="label">Nom</div>
+    <input id="input-nom" class="field" placeholder="Nom de l'ami">
+
+    <div id="error-nom" class="error hidden">ce nom est déjà pris</div>
+
+    <button class="btn" id="btn-valider-ajout">AJOUTER</button>
+  </main>
+
+  <!-- DETAIL AMI -->
+  <header class="hidden" id="header-detail">
+    <button class="btn-secondary" id="btn-retour-detail">&lt; accueil</button>
+    <h1 id="detail-nom">Détail</h1>
+  </header>
+
+  <main class="hidden" id="view-detail">
+    <div class="section-title">Résumé</div>
+    <div class="stat-row">
+      <span>SCORE ACTUEL</span>
+      <span id="detail-score-actuel">0</span>
+    </div>
+    <div class="stat-row">
+      <span>MEILLEUR SCORE</span>
+      <span id="detail-meilleur-score">0</span>
+    </div>
+    <div class="stat-row">
+      <span>AMI DEPUIS</span>
+      <span id="detail-date-ajout">-</span>
+    </div>
+    <div class="stat-row">
+      <span>JOURS PARLÉS</span>
+      <span id="detail-jours-parles">0</span>
+    </div>
+    <div class="stat-row">
+      <span>MOYENNE</span>
+      <span id="detail-moyenne">0%</span>
+    </div>
+    <div class="stat-row">
+      <span>AMI NUMÉRO</span>
+      <span id="detail-classement">-</span>
+    </div>
+
+    <div class="section-title">Calendrier (mois en cours)</div>
+    <div class="calendar" id="detail-calendar">
+      <!-- cases de jours remplies en JS -->
+    </div>
+
+    <div style="margin-top: 16px;">
+      <button class="btn-danger" id="btn-supprimer-ami">SUPPRIMER L’AMI</button>
+    </div>
+  </main>
+
+  <!-- TOTAL / JOUR -->
+  <header class="hidden" id="header-total">
+    <button class="btn-secondary" id="btn-retour-total">&lt; accueil</button>
+    <h1>Total</h1>
+    <div class="stats-mini">
+      <div>SCORE : <span id="total-score">0</span></div>
+    </div>
+  </header>
+
+  <main class="hidden" id="view-total">
+    <div class="label">Date</div>
+    <input id="input-date" class="field" type="date">
+
+    <div class="section-title">Résumé du jour</div>
+    <div class="stat-row">
+      <span>Amis parlés ce jour</span>
+      <span id="total-amis-jour">0</span>
+    </div>
+    <div class="stat-row">
+      <span>Comparé à la moyenne</span>
+      <span id="total-comparaison">-</span>
+    </div>
+
+    <div class="section-title">Amis parlés ce jour</div>
+    <div id="total-liste-amis">
+      <!-- liste d'amis de ce jour -->
+    </div>
+
+    <div class="section-title">Stats globales (30 jours)</div>
+    <div class="chips">
+      <div class="chip">MAX/jour : <span id="global-max-jour">0</span></div>
+      <div class="chip">AUJ : <span id="global-auj">0</span></div>
+      <div class="chip">MOY/jour : <span id="global-moy-jour">0</span></div>
+    </div>
+  </main>
 
   <script>
-    const champ = document.getElementById("texte");
+    // ---------- Données & stockage ----------
 
-    // Charger la donnée sauvegardée
-    champ.value = localStorage.getItem("monTexte") || "";
+    const STORAGE_KEY = "amis-app-v1";
 
-    // Sauvegarder à chaque modification
-    champ.addEventListener("input", () => {
-      localStorage.setItem("monTexte", champ.value);
+    let state = {
+      amis: [],
+      historiqueGlobal: {}, // { "YYYY-MM-DD": ["idAmi", ...] }
+      lastId: 0
+    };
+
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try {
+          state = JSON.parse(raw);
+        } catch (e) {
+          console.error("Erreur JSON, reset", e);
+        }
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function todayStr() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return y + "-" + m + "-" + day;
+    }
+
+    // ---------- Navigation de vues ----------
+
+    const views = {
+      accueil: {
+        header: document.getElementById("header-accueil"),
+        main: document.getElementById("view-accueil")
+      },
+      ajout: {
+        header: document.getElementById("header-ajout"),
+        main: document.getElementById("view-ajout")
+      },
+      detail: {
+        header: document.getElementById("header-detail"),
+        main: document.getElementById("view-detail")
+      },
+      total: {
+        header: document.getElementById("header-total"),
+        main: document.getElementById("view-total")
+      }
+    };
+
+    let currentView = "accueil";
+    let currentDetailId = null;
+
+    function showView(name) {
+      for (const key in views) {
+        const v = views[key];
+        if (key === name) {
+          v.header.classList.remove("hidden");
+          v.main.classList.remove("hidden");
+        } else {
+          v.header.classList.add("hidden");
+          v.main.classList.add("hidden");
+        }
+      }
+      currentView = name;
+
+      if (name === "accueil") {
+        renderAccueil();
+      } else if (name === "total") {
+        renderTotal();
+      } else if (name === "detail" && currentDetailId != null) {
+        renderDetail(currentDetailId);
+      }
+      updateMiniStats();
+    }
+
+    // ---------- Stats globales ----------
+
+    function computeGlobalStats() {
+      const today = todayStr();
+      let totalClickDays = 0;
+      let totalClickCount = 0;
+      let todayCount = 0;
+      let maxOneDay = 0;
+
+      const dates = Object.keys(state.historiqueGlobal);
+      for (const date of dates) {
+        const count = state.historiqueGlobal[date].length;
+        if (count > 0) {
+          totalClickDays++;
+          totalClickCount += count;
+          if (count > maxOneDay) maxOneDay = count;
+        }
+        if (date === today) {
+          todayCount = count;
+        }
+      }
+
+      const moy = totalClickDays === 0 ? 0 : (totalClickCount / totalClickDays);
+
+      return {
+        max: maxOneDay,
+        auj: todayCount,
+        moy: Math.round(moy * 10) / 10
+      };
+    }
+
+    function updateMiniStats() {
+      const stats = computeGlobalStats();
+      document.getElementById("mini-max").textContent = stats.max;
+      document.getElementById("mini-auj").textContent = stats.auj;
+      document.getElementById("mini-moy").textContent = stats.moy;
+
+      document.getElementById("ajout-max").textContent = stats.max;
+      document.getElementById("ajout-auj").textContent = stats.auj;
+      document.getElementById("ajout-moy").textContent = stats.moy;
+    }
+
+    // ---------- Accueil ----------
+
+    const friendsListEl = document.getElementById("friends-list");
+    const searchInput = document.getElementById("search");
+
+    function computeFriendStats(friend) {
+      const hist = friend.historique || {}; // { "YYYY-MM-DD": true }
+      const dates = Object.keys(hist).sort();
+      let joursParles = dates.length;
+
+      // Score actuel = série d'affilée en cours (simplifié)
+      const today = todayStr();
+      let scoreActuel = 0;
+      let cursor = new Date(today);
+
+      while (true) {
+        const y = cursor.getFullYear();
+        const m = String(cursor.getMonth() + 1).padStart(2, "0");
+        const d = String(cursor.getDate()).padStart(2, "0");
+        const key = y + "-" + m + "-" + d;
+        if (hist[key]) {
+          scoreActuel++;
+          cursor.setDate(cursor.getDate() - 1);
+        } else {
+          break;
+        }
+      }
+
+      // Meilleur score = plus longue chaîne (simplifié, brut)
+      let best = 0;
+      let current = 0;
+      let prevDate = null;
+
+      for (const key of dates) {
+        if (!prevDate) {
+          current = 1;
+        } else {
+          const prev = new Date(prevDate);
+          prev.setDate(prev.getDate() + 1);
+          const y = prev.getFullYear();
+          const m = String(prev.getMonth() + 1).padStart(2, "0");
+          const d = String(prev.getDate()).padStart(2, "0");
+          const expected = y + "-" + m + "-" + d;
+          if (expected === key) {
+            current++;
+          } else {
+            current = 1;
+          }
+        }
+        if (current > best) best = current;
+        prevDate = key;
+      }
+
+      return {
+        joursParles,
+        scoreActuel,
+        meilleurScore: best
+      };
+    }
+
+    function renderAccueil() {
+      const q = searchInput.value.trim().toLowerCase();
+      friendsListEl.innerHTML = "";
+
+      const friendsSorted = [...state.amis].sort((a, b) => {
+        const statsA = computeFriendStats(a);
+        const statsB = computeFriendStats(b);
+        return statsB.scoreActuel - statsA.scoreActuel;
+      });
+
+      for (const ami of friendsSorted) {
+        const stats = computeFriendStats(ami);
+
+        const item = document.createElement("div");
+        item.className = "friend-item";
+        item.dataset.id = ami.id;
+
+        const match = ami.nom.toLowerCase().includes(q);
+        if (q && !match) {
+          item.classList.add("dimmed");
+        }
+
+        const left = document.createElement("div");
+        left.className = "friend-name";
+        left.textContent = ami.nom;
+
+        const right = document.createElement("div");
+        right.className = "friend-score";
+        right.innerHTML =
+          stats.scoreActuel +
+          '<div class="dots">' +
+          "●".repeat(Math.min(stats.scoreActuel, 5)).padEnd(5, "○") +
+          "</div>";
+
+        item.appendChild(left);
+        item.appendChild(right);
+
+        item.addEventListener("click", () => {
+          // clic simple = toggler aujourd'hui
+          toggleTalkToday(ami.id);
+        });
+
+        item.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          openDetail(ami.id);
+        });
+
+        item.addEventListener("dblclick", () => {
+          openDetail(ami.id);
+        });
+
+        friendsListEl.appendChild(item);
+      }
+    }
+
+    function toggleTalkToday(id) {
+      const ami = state.amis.find(a => a.id === id);
+      if (!ami) return;
+      if (!ami.historique) ami.historique = {};
+      const t = todayStr();
+
+      if (ami.historique[t]) {
+        delete ami.historique[t];
+      } else {
+        ami.historique[t] = true;
+      }
+
+      // maj historique global
+      if (!state.historiqueGlobal[t]) {
+        state.historiqueGlobal[t] = [];
+      }
+      const list = state.historiqueGlobal[t];
+      const idx = list.indexOf(id);
+      if (idx >= 0) {
+        list.splice(idx, 1);
+      } else {
+        list.push(id);
+      }
+
+      saveState();
+      renderAccueil();
+      updateMiniStats();
+    }
+
+    // ---------- Ajout d'ami ----------
+
+    const btnAjouterAmi = document.getElementById("btn-ajouter-ami");
+    const btnRetourAjout = document.getElementById("btn-retour-ajout");
+    const inputNom = document.getElementById("input-nom");
+    const errorNom = document.getElementById("error-nom");
+    const btnValiderAjout = document.getElementById("btn-valider-ajout");
+
+    btnAjouterAmi.addEventListener("click", () => {
+      inputNom.value = "";
+      errorNom.classList.add("hidden");
+      showView("ajout");
     });
+
+    btnRetourAjout.addEventListener("click", () => {
+      showView("accueil");
+    });
+
+    btnValiderAjout.addEventListener("click", () => {
+      const nom = inputNom.value.trim();
+      if (!nom) return;
+
+      const exists = state.amis.some(a => a.nom.toLowerCase() === nom.toLowerCase());
+      if (exists) {
+        errorNom.classList.remove("hidden");
+        return;
+      }
+
+      errorNom.classList.add("hidden");
+
+      state.lastId++;
+      const d = todayStr();
+
+      state.amis.push({
+        id: state.lastId,
+        nom,
+        dateAjout: d,
+        historique: {}
+      });
+
+      saveState();
+      showView("accueil");
+    });
+
+    // ---------- Détail ami ----------
+
+    const btnRetourDetail = document.getElementById("btn-retour-detail");
+    const btnSupprimerAmi = document.getElementById("btn-supprimer-ami");
+
+    const detailNom = document.getElementById("detail-nom");
+    const detailScoreActuel = document.getElementById("detail-score-actuel");
+    const detailMeilleurScore = document.getElementById("detail-meilleur-score");
+    const detailDateAjout = document.getElementById("detail-date-ajout");
+    const detailJoursParles = document.getElementById("detail-jours-parles");
+    const detailMoyenne = document.getElementById("detail-moyenne");
+    const detailClassement = document.getElementById("detail-classement");
+    const detailCalendar = document.getElementById("detail-calendar");
+
+    function openDetail(id) {
+      currentDetailId = id;
+      showView("detail");
+    }
+
+    function renderDetail(id) {
+      const ami = state.amis.find(a => a.id === id);
+      if (!ami) return;
+
+      detailNom.textContent = ami.nom;
+
+      const stats = computeFriendStats(ami);
+      detailScoreActuel.textContent = stats.scoreActuel;
+      detailMeilleurScore.textContent = stats.meilleurScore;
+      detailJoursParles.textContent = stats.joursParles;
+
+      // moyenne = (joursParles / jours depuis ajout) * 100
+      const dAjout = new Date(ami.dateAjout);
+      const now = new Date();
+      const diffMs = now - dAjout;
+      const diffJ = Math.max(1, Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1);
+      const moy = Math.round((stats.joursParles / diffJ) * 100);
+      detailMoyenne.textContent = moy + "%";
+
+      detailDateAjout.textContent = ami.dateAjout;
+
+      // classement
+      const list = [...state.amis].sort((a, b) => {
+        return computeFriendStats(b).joursParles - computeFriendStats(a).joursParles;
+      });
+      const rank = list.findIndex(a => a.id === ami.id) + 1;
+      detailClassement.textContent = rank;
+
+      // calendrier du mois en cours
+      renderDetailCalendar(ami);
+    }
+
+    function renderDetailCalendar(ami) {
+      detailCalendar.innerHTML = "";
+      const today = new Date();
+      const y = today.getFullYear();
+      const m = today.getMonth(); // 0-11
+
+      const firstDay = new Date(y, m, 1);
+      const lastDay = new Date(y, m + 1, 0);
+      const totalDays = lastDay.getDate();
+
+      for (let d = 1; d <= totalDays; d++) {
+        const dateKey =
+          y +
+          "-" +
+          String(m + 1).padStart(2, "0") +
+          "-" +
+          String(d).padStart(2, "0");
+
+        const cell = document.createElement("div");
+        cell.className = "day-cell";
+        cell.textContent = d;
+
+        if (ami.historique && ami.historique[dateKey]) {
+          cell.classList.add("active");
+        }
+
+        const isToday =
+          d === today.getDate() && m === today.getMonth() && y === today.getFullYear();
+        if (isToday) {
+          cell.classList.add("today");
+        }
+
+        cell.addEventListener("click", () => {
+          // toggle ce jour dans l'historique ami
+          if (!ami.historique) ami.historique = {};
+          if (ami.historique[dateKey]) {
+            delete ami.historique[dateKey];
+            // enlever aussi de l'historique global
+            if (state.historiqueGlobal[dateKey]) {
+              const idx = state.historiqueGlobal[dateKey].indexOf(ami.id);
+              if (idx >= 0) state.historiqueGlobal[dateKey].splice(idx, 1);
+            }
+          } else {
+            ami.historique[dateKey] = true;
+            if (!state.historiqueGlobal[dateKey]) state.historiqueGlobal[dateKey] = [];
+            if (!state.historiqueGlobal[dateKey].includes(ami.id)) {
+              state.historiqueGlobal[dateKey].push(ami.id);
+            }
+          }
+          saveState();
+          renderDetail(ami.id);
+          if (currentView === "accueil") renderAccueil();
+        });
+
+        detailCalendar.appendChild(cell);
+      }
+    }
+
+    btnRetourDetail.addEventListener("click", () => {
+      showView("accueil");
+    });
+
+    btnSupprimerAmi.addEventListener("click", () => {
+      if (currentDetailId == null) return;
+      if (!confirm("Supprimer cet ami ?")) return;
+
+      const id = currentDetailId;
+      state.amis = state.amis.filter(a => a.id !== id);
+
+      // nettoyer historique global
+      for (const date in state.historiqueGlobal) {
+        state.historiqueGlobal[date] = state.historiqueGlobal[date].filter(x => x !== id);
+      }
+
+      saveState();
+      currentDetailId = null;
+      showView("accueil");
+    });
+
+    // ---------- TOTAL / JOUR ----------
+
+    const btnTotal = document.getElementById("btn-total");
+    const btnRetourTotal = document.getElementById("btn-retour-total");
+    const inputDate = document.getElementById("input-date");
+    const totalScore = document.getElementById("total-score");
+    const totalAmisJour = document.getElementById("total-amis-jour");
+    const totalComparaison = document.getElementById("total-comparaison");
+    const totalListeAmis = document.getElementById("total-liste-amis");
+    const globalMaxJour = document.getElementById("global-max-jour");
+    const globalAuj = document.getElementById("global-auj");
+    const globalMoyJour = document.getElementById("global-moy-jour");
+
+    btnTotal.addEventListener("click", () => {
+      inputDate.value = todayStr();
+      showView("total");
+    });
+
+    btnRetourTotal.addEventListener("click", () => {
+      showView("accueil");
+    });
+
+    inputDate.addEventListener("change", () => {
+      renderTotal();
+    });
+
+    function renderTotal() {
+      const date = inputDate.value || todayStr();
+      const stats = computeGlobalStats();
+
+      globalMaxJour.textContent = stats.max;
+      globalAuj.textContent = stats.auj;
+      globalMoyJour.textContent = stats.moy;
+
+      const ids = state.historiqueGlobal[date] || [];
+      totalAmisJour.textContent = ids.length;
+
+      if (stats.moy === 0) {
+        totalComparaison.textContent = "-";
+      } else {
+        const diff = ids.length - stats.moy;
+        const signe = diff > 0 ? "+" : "";
+        totalComparaison.textContent = signe + diff.toFixed(1);
+      }
+
+      // score du jour = nombre d'amis parlés (simple)
+      totalScore.textContent = ids.length;
+
+      totalListeAmis.innerHTML = "";
+      const friends = ids
+        .map(id => state.amis.find(a => a.id === id))
+        .filter(Boolean);
+
+      for (const ami of friends) {
+        const row = document.createElement("div");
+        row.className = "stat-row";
+        row.innerHTML =
+          "<span>" +
+          ami.nom +
+          "</span><span>" +
+          computeFriendStats(ami).scoreActuel +
+          "</span>";
+        totalListeAmis.appendChild(row);
+      }
+    }
+
+    // ---------- Search live ----------
+
+    searchInput.addEventListener("input", () => {
+      renderAccueil();
+    });
+
+    // ---------- Init ----------
+
+    loadState();
+    showView("accueil");
   </script>
 </body>
 </html>
